@@ -1,0 +1,37 @@
+---
+import { formatMoney } from '../lib/format';
+import type { Product } from '../lib/supabase';
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props as Props;
+---
+<a
+  href={`/shop/${product.slug}`}
+  class="group block border border-[color:var(--color-ink-line)] bg-[color:var(--color-ink-soft)] transition-all duration-500 hover:border-[color:var(--color-ember)]"
+>
+  <div class="relative aspect-[4/5] overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-t from-[color:var(--color-ink)]/70 via-transparent to-transparent z-10"></div>
+    {product.image_url && (
+      <img
+        src={product.image_url}
+        alt={product.name}
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+      />
+    )}
+    <div class="absolute left-4 top-4 z-20 text-[10px] uppercase tracking-[0.28em] text-[color:var(--color-bone-dim)]">
+      {product.scent_profile}
+    </div>
+  </div>
+  <div class="flex items-baseline justify-between px-5 py-5">
+    <div>
+      <div class="font-[family-name:var(--font-display)] text-xl text-[color:var(--color-bone)]">{product.name}</div>
+      <div class="mt-1 text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-bone-mute)]">
+        {product.burn_time} · {product.weight_g}g
+      </div>
+    </div>
+    <div class="text-lg text-[color:var(--color-ember)] tabular-nums">{formatMoney(product.price_pence, product.currency)}</div>
+  </div>
+</a>

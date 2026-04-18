@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #111111;
+  --color-ink-raised: #171717;
+  --color-ink-line: #242424;
+  --color-bone: #f2ece2;
+  --color-bone-dim: #bdb3a4;
+  --color-bone-mute: #7e7569;
+  --color-ember: #d6a16a;
+  --color-ember-soft: #b98751;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at top, rgba(214, 161, 106, 0.08), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(214, 161, 106, 0.04), transparent 55%),
+      var(--color-ink);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: var(--color-ember);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium tracking-wide uppercase transition-all duration-300;
+  }
+  .btn-primary {
+    background: var(--color-bone);
+    color: var(--color-ink);
+  }
+  .btn-primary:hover {
+    background: var(--color-ember);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-ink-line);
+    color: var(--color-bone);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-ember);
+    color: var(--color-ember);
+  }
+  .hairline {
+    border-top: 1px solid var(--color-ink-line);
+  }
+}

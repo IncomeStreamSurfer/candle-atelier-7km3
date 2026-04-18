@@ -1,0 +1,33 @@
+---
+const pathname = Astro.url.pathname;
+const link = (href: string) =>
+  `text-xs uppercase tracking-[0.22em] transition-colors ${
+    pathname === href ? 'text-[color:var(--color-ember)]' : 'text-[color:var(--color-bone-dim)] hover:text-[color:var(--color-bone)]'
+  }`;
+---
+<header class="sticky top-0 z-40 border-b border-[color:var(--color-ink-line)] backdrop-blur-md bg-[rgba(10,10,10,0.72)]">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
+    <a href="/" class="flex flex-col leading-none">
+      <span class="font-[family-name:var(--font-display)] text-[22px] tracking-tight text-[color:var(--color-bone)]">Candle Atelier</span>
+      <span class="mt-1 text-[10px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">Hand poured · Small batch</span>
+    </a>
+    <nav class="hidden items-center gap-10 md:flex">
+      <a href="/" class={link('/')}>Home</a>
+      <a href="/shop" class={link('/shop')}>Shop</a>
+      <a href="/about" class={link('/about')}>Atelier</a>
+      <a href="/journal" class={link('/journal')}>Journal</a>
+    </nav>
+    <a
+      href="/cart"
+      class="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[color:var(--color-bone-dim)] hover:text-[color:var(--color-ember)]"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Bag
+      <span
+        data-cart-count
+        class="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--color-ember)] px-1.5 text-[10px] font-semibold text-[color:var(--color-ink)]"
+        style="opacity:0.4"
+      >0</span>
+    </a>
+  </div>
+</header>

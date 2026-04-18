@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  jsonLd?: Record<string, any> | Record<string, any>[];
+}
+
+const {
+  title,
+  description = 'Hand-poured candles in clean, considered fragrance. Small batch. Shipped from the UK.',
+  image,
+  canonical,
+  jsonLd,
+} = Astro.props as Props;
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL as string) || Astro.url.origin;
+const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).toString();
+const ogImage = image || 'https://images.unsplash.com/photo-1602874801006-b4b55a0db3b3?auto=format&fit=crop&w=1200&q=80';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="Candle Atelier" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap"
+    />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      // Cart count synced from localStorage
+      const updateCount = () => {
+        const raw = localStorage.getItem('cart');
+        let count = 0;
+        try {
+          const parsed = raw ? JSON.parse(raw) : [];
+          count = parsed.reduce((a: number, b: any) => a + (b.quantity || 0), 0);
+        } catch {}
+        document.querySelectorAll<HTMLElement>('[data-cart-count]').forEach((el) => {
+          el.textContent = String(count);
+          el.style.opacity = count > 0 ? '1' : '0.4';
+        });
+      };
+      updateCount();
+      window.addEventListener('storage', updateCount);
+      window.addEventListener('cart:updated', updateCount);
+    </script>
+  </body>
+</html>
