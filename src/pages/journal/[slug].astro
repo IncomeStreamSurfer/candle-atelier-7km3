@@ -1,0 +1,28 @@
+---
+import Base from '../../layouts/Base.astro';
+import { supabase } from '../../lib/supabase';
+
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/journal');
+
+const { data } = await supabase
+  .from('content')
+  .select('slug, title, body, seo_description, published_at')
+  .eq('slug', slug)
+  .not('published_at', 'is', null)
+  .maybeSingle();
+
+if (!data) return Astro.redirect('/journal');
+---
+<Base title={`${data.title} — Candle Atelier`} description={data.seo_description || undefined}>
+  <article class="mx-auto max-w-2xl px-6 py-20 md:px-10 md:py-28">
+    <a href="/journal" class="text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-bone-mute)] hover:text-[color:var(--color-ember)]">← Journal</a>
+    <div class="mt-8 text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-bone-mute)]">
+      {new Date(data.published_at!).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </div>
+    <h1 class="mt-3 font-[family-name:var(--font-display)] text-5xl text-[color:var(--color-bone)]">{data.title}</h1>
+    <div class="prose prose-invert mt-10 max-w-none text-[color:var(--color-bone-dim)] leading-relaxed whitespace-pre-wrap">
+      {data.body}
+    </div>
+  </article>
+</Base>

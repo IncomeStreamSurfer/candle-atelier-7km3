@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import { supabase } from '../../lib/supabase';
+
+const { data } = await supabase
+  .from('content')
+  .select('slug, title, seo_description, published_at')
+  .not('published_at', 'is', null)
+  .order('published_at', { ascending: false });
+
+const posts = data || [];
+---
+<Base
+  title="Journal — Candle Atelier"
+  description="Notes from the studio. Pours, fragrance, quiet things."
+>
+  <section class="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-28">
+    <div class="text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">Journal</div>
+    <h1 class="mt-3 font-[family-name:var(--font-display)] text-5xl text-[color:var(--color-bone)] md:text-6xl">Notes from the studio</h1>
+
+    {posts.length === 0 ? (
+      <div class="mt-16 border border-dashed border-[color:var(--color-ink-line)] p-10 text-center">
+        <div class="font-[family-name:var(--font-display)] text-2xl text-[color:var(--color-bone)]">First note, soon.</div>
+        <p class="mt-2 text-sm text-[color:var(--color-bone-mute)]">The journal opens when the first pour of the season is ready.</p>
+      </div>
+    ) : (
+      <ul class="mt-12 divide-y divide-[color:var(--color-ink-line)] border-y border-[color:var(--color-ink-line)]">
+        {posts.map((p) => (
+          <li>
+            <a href={`/journal/${p.slug}`} class="group flex items-baseline justify-between gap-6 py-8 transition hover:bg-[color:var(--color-ink-soft)]">
+              <div>
+                <div class="font-[family-name:var(--font-display)] text-2xl text-[color:var(--color-bone)] group-hover:text-[color:var(--color-ember)]">{p.title}</div>
+                <div class="mt-2 max-w-xl text-sm text-[color:var(--color-bone-mute)]">{p.seo_description}</div>
+              </div>
+              <div class="whitespace-nowrap text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-bone-mute)]">
+                {new Date(p.published_at!).toLocaleDateString('en-GB', { year: 'numeric', month: 'short' })}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Base>

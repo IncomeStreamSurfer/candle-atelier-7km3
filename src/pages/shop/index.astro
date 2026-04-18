@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getActiveProducts } from '../../lib/supabase';
+
+const products = await getActiveProducts();
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL as string) || Astro.url.origin;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Candle Atelier — Shop',
+  url: new URL('/shop', siteUrl).toString(),
+  hasPart: products.map((p) => ({
+    '@type': 'Product',
+    name: p.name,
+    url: new URL(`/shop/${p.slug}`, siteUrl).toString(),
+    image: p.image_url,
+    offers: {
+      '@type': 'Offer',
+      price: (p.price_pence / 100).toFixed(2),
+      priceCurrency: p.currency.toUpperCase(),
+      availability: 'https://schema.org/InStock',
+    },
+  })),
+};
+---
+<Base
+  title="Shop — Candle Atelier"
+  description="Four hand-poured candles. Forest Balm, Sea Salt, Amber Wood, Fig & Cedar. Coconut-rapeseed wax, cotton wicks."
+  jsonLd={jsonLd}
+>
+  <section class="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-24">
+    <div class="mb-12 border-b border-[color:var(--color-ink-line)] pb-8">
+      <div class="text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">Season 01</div>
+      <h1 class="mt-3 font-[family-name:var(--font-display)] text-5xl text-[color:var(--color-bone)] md:text-6xl">The four candles</h1>
+      <p class="mt-4 max-w-2xl text-[color:var(--color-bone-dim)]">
+        Every candle is hand-poured in a small studio in London, cured for two weeks, and
+        signed before it ships. Free UK delivery on orders over £60.
+      </p>
+    </div>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {products.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+</Base>

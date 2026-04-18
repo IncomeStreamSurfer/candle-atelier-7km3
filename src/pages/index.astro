@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getActiveProducts } from '../lib/supabase';
+
+const products = await getActiveProducts();
+const hero = products[0];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Candle Atelier',
+    url: (import.meta.env.PUBLIC_SITE_URL as string) || Astro.url.origin,
+    logo: '/favicon.svg',
+    description: 'Hand-poured candles in clean, considered fragrance.',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Candle Atelier',
+    url: (import.meta.env.PUBLIC_SITE_URL as string) || Astro.url.origin,
+  },
+];
+---
+<Base
+  title="Candle Atelier — Hand-poured candles, quietly made"
+  description="Four candles. Coconut-rapeseed wax, cotton wicks, small-batch pours. Forest Balm, Sea Salt, Amber Wood and Fig & Cedar."
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="mx-auto grid max-w-7xl gap-10 px-6 py-20 md:grid-cols-[1.1fr_1fr] md:gap-16 md:px-10 md:py-32">
+      <div class="flex flex-col justify-center">
+        <div class="mb-6 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">
+          <span class="h-px w-10 bg-[color:var(--color-ember)]"></span>
+          Season 01 · Four pours
+        </div>
+        <h1 class="font-[family-name:var(--font-display)] text-5xl leading-[1.05] tracking-tight text-[color:var(--color-bone)] md:text-7xl">
+          Small rooms,<br/>low lamplight,<br/><em class="italic text-[color:var(--color-ember)]">quiet scent.</em>
+        </h1>
+        <p class="mt-8 max-w-lg text-base leading-relaxed text-[color:var(--color-bone-dim)]">
+          Four candles, poured by hand in London. Coconut-rapeseed wax, cotton wicks,
+          considered fragrance. Made in batches of no more than forty.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a href="/shop" class="btn btn-primary">Shop the four</a>
+          <a href="/about" class="btn btn-ghost">About the studio</a>
+        </div>
+        <div class="mt-16 flex gap-10 text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-bone-mute)]">
+          <span>Coconut-rapeseed wax</span>
+          <span>Cotton wick</span>
+          <span>Vegan · Clean burn</span>
+        </div>
+      </div>
+      {hero && hero.image_url && (
+        <div class="relative">
+          <div class="absolute inset-0 -m-4 bg-gradient-to-br from-[color:var(--color-ember)]/10 to-transparent blur-2xl"></div>
+          <div class="relative aspect-[4/5] overflow-hidden border border-[color:var(--color-ink-line)]">
+            <img src={hero.image_url} alt={hero.name} class="h-full w-full object-cover" />
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[color:var(--color-ink)] via-[color:var(--color-ink)]/60 to-transparent p-6">
+              <div class="text-[10px] uppercase tracking-[0.28em] text-[color:var(--color-bone-dim)]">New pour</div>
+              <div class="mt-1 font-[family-name:var(--font-display)] text-2xl text-[color:var(--color-bone)]">{hero.name}</div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Shop grid -->
+  <section class="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-24">
+    <div class="mb-12 flex items-end justify-between border-b border-[color:var(--color-ink-line)] pb-6">
+      <div>
+        <div class="text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">The Four</div>
+        <h2 class="mt-2 font-[family-name:var(--font-display)] text-3xl text-[color:var(--color-bone)] md:text-4xl">Current season</h2>
+      </div>
+      <a href="/shop" class="hidden text-xs uppercase tracking-[0.22em] text-[color:var(--color-bone-dim)] hover:text-[color:var(--color-ember)] md:inline-flex">View all →</a>
+    </div>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {products.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+
+  <!-- Story strip -->
+  <section class="mx-auto max-w-4xl px-6 py-24 text-center md:px-10">
+    <div class="text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">A quiet practice</div>
+    <p class="mt-6 font-[family-name:var(--font-display)] text-2xl leading-relaxed text-[color:var(--color-bone)] md:text-3xl">
+      “We pour slowly, cure for two weeks, then sit with each candle before we send it.
+      The pour itself is half the fragrance — the other half is the room it ends up in.”
+    </p>
+    <div class="mt-6 text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-bone-mute)]">Founder, Candle Atelier</div>
+  </section>
+</Base>

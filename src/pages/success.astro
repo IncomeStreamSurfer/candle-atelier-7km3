@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import { stripe } from '../lib/stripe';
+
+const sessionId = Astro.url.searchParams.get('session_id');
+let session: any = null;
+let email: string | null = null;
+let total = 0;
+let currency = 'gbp';
+
+if (sessionId) {
+  try {
+    session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['line_items'] });
+    email = session.customer_details?.email || null;
+    total = session.amount_total || 0;
+    currency = session.currency || 'gbp';
+  } catch (e) {
+    console.error(e);
+  }
+}
+const fmt = new Intl.NumberFormat('en-GB', { style: 'currency', currency: currency.toUpperCase() }).format(total / 100);
+---
+<Base title="Order confirmed — Candle Atelier" description="Thank you for your order.">
+  <section class="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 py-24 text-center md:px-10">
+    <div class="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-[color:var(--color-ember)] text-2xl text-[color:var(--color-ember)]">✦</div>
+    <div class="text-[11px] uppercase tracking-[0.32em] text-[color:var(--color-bone-mute)]">Order received</div>
+    <h1 class="mt-4 font-[family-name:var(--font-display)] text-5xl leading-tight text-[color:var(--color-bone)] md:text-6xl">
+      Thank you, quietly.
+    </h1>
+    <p class="mt-6 max-w-md text-[color:var(--color-bone-dim)]">
+      {email
+        ? `A confirmation is on its way to ${email}. Your candles are being hand-finished and will ship within 3 working days.`
+        : 'Your candles are being hand-finished and will ship within 3 working days.'}
+    </p>
+    {total > 0 && (
+      <div class="mt-10 flex items-baseline gap-3 border-t border-[color:var(--color-ink-line)] pt-6 text-[color:var(--color-bone-mute)]">
+        <span class="text-[10px] uppercase tracking-[0.28em]">Order total</span>
+        <span class="text-xl text-[color:var(--color-ember)] tabular-nums">{fmt}</span>
+      </div>
+    )}
+    <div class="mt-12 flex gap-4">
+      <a href="/" class="btn btn-primary">Back home</a>
+      <a href="/shop" class="btn btn-ghost">Keep browsing</a>
+    </div>
+  </section>
+  <script>
+    try { localStorage.removeItem('cart'); window.dispatchEvent(new Event('cart:updated')); } catch {}
+  </script>
+</Base>
